@@ -382,6 +382,30 @@ Feature: Share by public link
     Then file "lorem.txt" should be listed on the webUI
     And file "lorem (2).txt" should be listed on the webUI
 
+  Scenario: Editing the permission on a existing share from read-write to upload-write-without-modify works correctly
+    Given the user has created a new public link for folder "simple-folder" using the webUI with
+      | permission | read-write |
+    And the public accesses the last created public link using the webUI
+    Then it should be possible to delete file "lorem.txt" using the webUI
+    When the user browses to the files page
+    And the user opens the share dialog for folder "simple-folder"
+    And the user opens the public link share tab
+    And the user changes the permission of the public link named "Public link" to "upload-write-without-modify"
+    And the public accesses the last created public link using the webUI
+    Then it should not be possible to delete file "lorem-big.txt" using the webUI
+
+  Scenario: Editing the permission on a existing share from upload-write-without-modify to read-write works correctly
+    Given the user has created a new public link for folder "simple-folder" using the webUI with
+      | permission | upload-write-without-modify |
+    And the public accesses the last created public link using the webUI
+    Then it should not be possible to delete file "lorem.txt" using the webUI
+    When the user browses to the files page
+    And the user opens the share dialog for folder "simple-folder"
+    And the user opens the public link share tab
+    And the user changes the permission of the public link named "Public link" to "read-write"
+    And the public accesses the last created public link using the webUI
+    Then it should be possible to delete file "lorem-big.txt" using the webUI
+
   Scenario: user creates public link with view download and upload feature and uploads and cancels same file multiple times to verify the conflict dialog exits after clicking cancel button
     Given the user has created a new public link for folder "simple-folder" using the webUI with
       | permission | upload-write-without-modify |

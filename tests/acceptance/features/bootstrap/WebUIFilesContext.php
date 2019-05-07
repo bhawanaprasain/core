@@ -1596,21 +1596,27 @@ class WebUIFilesContext extends RawMinkContext implements Context {
 	}
 
 	/**
-	 * @Then it should not be possible to delete file/folder :name using the webUI
+	 * @Then /^it should (not|)\s?be possible to delete file ((?:'[^']*')|(?:"[^"]*")) using the webUI$/
 	 *
+	 * @param string $shouldOrNot
 	 * @param string $name
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function itShouldNotBePossibleToDeleteFileFolderUsingTheWebUI($name) {
+	public function itShouldNotBePossibleToDeleteFileFolderUsingTheWebUI($shouldOrNot, $name) {
+		$expect = $shouldOrNot !== "not";
+		$name = \trim($name, $name[0]);
 		try {
-			$this->deleteTheFileUsingTheWebUI($name, false);
+			$retries = $expect ? 1 : null;
+			$this->deleteTheFileUsingTheWebUI($name, $expect);
 		} catch (ElementNotFoundException $e) {
-			PHPUnit\Framework\Assert::assertContains(
-				"could not find button 'Delete' in action Menu",
-				$e->getMessage()
-			);
+			if (!$expect) {
+				PHPUnit\Framework\Assert::assertContains(
+					"could not find button 'Delete' in action Menu",
+					$e->getMessage()
+				);
+			}
 		}
 	}
 
